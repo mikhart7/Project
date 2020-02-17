@@ -1,0 +1,19 @@
+package com.company;
+public class Meteors {
+    public int x, y;
+    private int dx;
+
+    public Meteors() {
+        this.x = 2500;
+        this.y = 400;
+        this.dx = 10;
+    }
+
+    public void move() {
+        x -= dx;
+    }
+    public int getx() {
+        return x;
+    }
+
+}
