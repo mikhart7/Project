@@ -1,0 +1,65 @@
+package com.company;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import javax.swing.*;
+
+public class Main extends JPanel implements ActionListener  {
+    Image imgfon = new ImageIcon("Ajr69P.png").getImage();
+    Image imgM = new ImageIcon("spaceMeteors.png").getImage();
+    Image imgpl = new ImageIcon("spaceBuilding.png").getImage();
+    Image f = new ImageIcon("finish-line.png").getImage();
+    Timer timer = new Timer(20, this);
+    Player player = new Player();
+    Meteors [] a = new Meteors[100];
+    Meteors meteor = new Meteors();
+    JFrame frame;
+    public Main(JFrame frame) {
+        this.frame = frame;
+        timer.start();
+        frame.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                player.keyPressed(e);
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e){
+                player.keyReleased(e);
+            }
+        });
+
+    }
+
+    public void paint(Graphics g) {
+     for(int i = 0;i<10;i++) {
+         g.drawImage(imgfon,player.getmapX()+i*frame.getWidth(), 0, frame.getWidth(), frame.getHeight(),null);
+     }
+        if(meteor.x<-100) {
+            meteor.x = 2500;
+        }
+        g.drawImage(imgM, meteor.x, meteor.y, 100, 100, null);
+
+        g.setColor(Color.red);
+        g.drawImage(f,player.getmapX()+5*frame.getWidth()-2000,700,300,300,null);
+        g.fillRect(player.getmapX()+5*frame.getWidth(),0,50,1100);
+
+        g.drawImage(imgpl,player.getX(), player.getY(), 200, 100,null);
+        if (player.getmapX()==-5*frame.getWidth()){
+            timer.stop();
+        }
+
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        player.mapmove();
+        player.move();
+        meteor.move();
+        repaint();
+    }
+
+}
