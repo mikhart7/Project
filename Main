@@ -1,4 +1,6 @@
 package com.company;
+
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,15 +10,21 @@ import javax.swing.*;
 
 public class Main extends JPanel implements ActionListener  {
     Image imgfon = new ImageIcon("Ajr69P.png").getImage();
-    Image imgM = new ImageIcon("spaceMeteors.png").getImage();
+    Image imgM = new ImageIcon("spaceShips_008.png").getImage();
     Image imgpl = new ImageIcon("spaceBuilding.png").getImage();
     Image f = new ImageIcon("finish-line.png").getImage();
-    Timer timer = new Timer(20, this);
+    Timer timer = new Timer(10, this);
     Player player = new Player();
-    Meteors [] a = new Meteors[100];
-    Meteors meteor = new Meteors();
+        Meteors [] meteors = new Meteors[20] ;
+        int k = 0;
+        Bullet [] bullets = new Bullet[80];
+        int c = 0;
+        int kc = 0;
+        int n=0;
+
     JFrame frame;
     public Main(JFrame frame) {
+
         this.frame = frame;
         timer.start();
         frame.addKeyListener(new KeyAdapter() {
@@ -35,22 +43,56 @@ public class Main extends JPanel implements ActionListener  {
     }
 
     public void paint(Graphics g) {
-     for(int i = 0;i<10;i++) {
-         g.drawImage(imgfon,player.getmapX()+i*frame.getWidth(), 0, frame.getWidth(), frame.getHeight(),null);
-     }
-        if(meteor.x<-100) {
-            meteor.x = 2500;
-        }
-        g.drawImage(imgM, meteor.x, meteor.y, 100, 100, null);
-
+        for(int i = 0;i<10;i++) {
+        g.drawImage(imgfon,player.getmapX()+i*frame.getWidth(), 0, frame.getWidth(), frame.getHeight(),null);
+    }
         g.setColor(Color.red);
+        g.fillRect(300,1000,100-10*n,20);
         g.drawImage(f,player.getmapX()+5*frame.getWidth()-2000,700,300,300,null);
         g.fillRect(player.getmapX()+5*frame.getWidth(),0,50,1100);
 
-        g.drawImage(imgpl,player.getX(), player.getY(), 200, 100,null);
-        if (player.getmapX()==-5*frame.getWidth()){
-            timer.stop();
+        if(-player.getmapX()  % 500 == 0) {
+            k++;
+         }
+
+        if(-player.getmapX()  % 100 == 0) {
+            c++;
         }
+
+        if(-player.getmapX()  % 200 == 0) {
+            kc++;
+        }
+
+
+        g.setColor(Color.GREEN);
+        for (int i = 0;i<=k;i++) {
+            for(int j = 0;j<meteors[i].kk.length;j++){
+                    if(j<=kc ){
+                        g.fillOval(meteors[i].kk[j].x,meteors[i].kk[j].y,10,10);
+                    }
+                    else{
+                        meteors[i].kk[j].x=meteors[i].x;
+                    }
+                }
+                if(meteors[i].b==true ) {
+                g.drawImage(imgM, meteors[i].x, meteors[i].y, 100, 100, null);
+            }
+        }
+
+
+        g.setColor(Color.red);
+        for(int i = 0;i<bullets.length;i++) {
+            if (bullets[i].x < 2000) {
+                if (i <= c) {
+                    g.fillOval(bullets[i].x, bullets[i].y, 10, 10);
+                } else {
+                    bullets[i].x = player.getX() + 200;
+                    bullets[i].y = player.getY() + 50;
+                }
+            }
+        }
+
+        g.drawImage(imgpl,player.getX(), player.getY(), 200, 100,null);
 
     }
 
@@ -58,8 +100,63 @@ public class Main extends JPanel implements ActionListener  {
     public void actionPerformed(ActionEvent e) {
         player.mapmove();
         player.move();
-        meteor.move();
+        if (meteors[0]==null) {
+            for (int i = 0; i < meteors.length; i++) {
+                meteors[i] = new Meteors(2000, (int) (Math.random() * 1000));
+                    for (int j = 0; j < meteors[i].kk.length; j++) {
+                        meteors[i].kk[j] = new Bullet(meteors[i].x, meteors[i].y + 50,-15,0);
+                    }
+            }
+         }
+
+        if (bullets[0]==null){
+            for(int i = 0;i<bullets.length;i++) {
+                bullets[i] = new Bullet(player.getX()+200,player.getY()+50,15,-333);
+            }
+        }
+
+        if( bullets[c].dy == -333 ) {
+           bullets[c].dy = 2 * player.t;
+       }
+
+        for (int i = 0; i <= c; i++) {
+            bullets[i].move();
+        }
+        for (int i = 0;i<=k;i++){
+            meteors[i].move();
+            for(int j = 0;j<=kc;j++){
+                meteors[i].kk[j].move();
+            }
+
+        }
+
+        for(int i = 0;i<=k;i++){
+            for(int j=0;j<=c;j++){
+            if(meteors[i].distance(bullets[j].x,bullets[j].y)<=50){
+                meteors[i].b=false;
+            }
+          }
+             if(meteors[i].x==-110 && meteors[i].b==true ){
+                 timer.stop();
+             }
+        }
+
+        for(int i =0;i<=k;i++){
+            for(int j =0;j<=kc;j++){
+                if(player.distance(meteors[i].kk[j].x,meteors[i].kk[j].y)<=50){
+                   n++;
+                }
+            }
+        }
+
+        //if(n==25) {
+          //  player.b = false;
+        //}
         repaint();
+        if (player.getmapX()==-5*frame.getWidth() ){
+            timer.stop();
+        }
     }
 
 }
+
